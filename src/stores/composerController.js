@@ -1,6 +1,6 @@
 import Vue from 'vue'
 
-import Qapi from '../lib/Qapi'
+import Qapi from '../libs/Qapi'
 import gates from '../assets/gates.json'
 
 const state = {

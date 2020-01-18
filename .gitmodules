@@ -1,0 +1,6 @@
+[submodule "src/libs/qsim"]
+	path = src/libs/qsim
+	url = https://github.com/Th1nkK1D/quantarium-qsim
+[submodule "src/libs/3bloch"]
+	path = src/libs/3bloch
+	url = https://github.com/Th1nkK1D/threejs-blochsphere
