@@ -1,6 +1,6 @@
 <template>
   <div class="fx-col qubit-composer">
-    <div v-if="composer.allowReset"  class="nav-icon" style="right: 0;" @click="resetComposer">&#8634;</div>
+    <div v-if="composerIsAllowedReset"  class="nav-icon" style="right: 0;" @click="resetComposer">&#8634;</div>
     <!-- title row -->
     <div class="fx-row">
       <h3 class="title">Qubit Composer</h3>
@@ -8,9 +8,9 @@
     <div class="fx-x1"></div>
     <!-- stage -->
     <div class="fx-row fx-x1" style="padding: 0 4em">
-      <GateStage class="fx-x1" :appliedGates="appliedGates" :onRemoveGate="popGate" :isCollapsed="composer.collapsed"/>
-      <div v-if="composer.allowMeasure" class="fx-col options">
-        <button v-if="!composer.collapsed" @click="measure(1000)" :class="{'is-objective': currentObjective && currentObjective.trigger === 'composer-measure' }">
+      <GateStage class="fx-x1" :appliedGates="appliedGates" :onRemoveGate="popGate" :isCollapsed="qubitIsCollapsed"/>
+      <div v-if="composerIsAllowedMeasure" class="fx-col options">
+        <button v-if="!qubitIsCollapsed" @click="measure(1000)" :class="{'is-objective': currentObjective && currentObjective.trigger === 'composer-measure' }">
           {{ langSwitch(['Measure', 'ทำการวัด']) }}<br>x1000
         </button>
         <button v-else @click="unmeasure()">
@@ -20,14 +20,14 @@
     </div><!-- end of stage -->
     <!-- under stage -->
     <div class="fx-row fx-x2 fx-justcent under-stage">
-      <GateTray v-if="!composer.collapsed" :onFocusGate="previewGate" :onSelectGate="pushGate" :availableGates="availableGates" />
-      <MeasurementResult v-else :measurement="composer.measurement" />
+      <GateTray v-if="!qubitIsCollapsed" :onFocusGate="previewGate" :onSelectGate="pushGate" :availableGates="availableGates" />
+      <MeasurementResult v-else :measurement="measurementData" />
     </div><!-- end of under stage -->
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 import GateStage from '@/components/GateStage'
 import GateTray from '@/components/GateTray'
@@ -41,19 +41,16 @@ export default {
     MeasurementResult
   },
   computed: {
-    ...mapState([
-      'composer'
-    ]),
     ...mapGetters([
       'langSwitch',
-      'currentObjective'
-    ]),
-    availableGates () {
-      return this.composer.availableGates.map(ag => this.composer.gateList.find(gl => ag === gl.symbol))
-    },
-    appliedGates () {
-      return this.composer.appliedGates.map(ag => this.composer.gateList.find(gl => ag === gl.symbol))
-    }
+      'currentObjective',
+      'availableGates',
+      'appliedGates',
+      'qubitIsCollapsed',
+      'measurementData',
+      'composerIsAllowedMeasure',
+      'composerIsAllowedReset'
+    ])
   },
   methods: {
     ...mapActions([

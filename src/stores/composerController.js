@@ -1,137 +1,84 @@
 import Vue from 'vue'
 
-import Qapi from '../libs/Qapi'
 import gates from '../assets/gates.json'
+import { Qubit, BasicGate } from '../libs/qsim/src'
+
+function getBasicGateObject (gate) {
+  return BasicGate[gate.symbol]
+}
 
 const state = {
   composer: {
+    qubit: new Qubit(),
     isDisplay: true,
     gateList: gates,
-    availableGates: gates.map(g => g.symbol),
+    availableGates: gates,
     focusedGate: undefined,
-    appliedGates: [],
     allowMeasure: true,
-    allowReset: true,
-    collapsed: false,
-    measurement: {
-      batchSize: 0,
-      result: [0, 0]
-    }
+    allowReset: true
   }
 }
 
 const getters = {
-  composerIsDisplayed (state) {
-    return state.composer.isDisplay
-  },
-  focusedGate (state) {
-    return state.composer.focusedGate
-  }
+  composerIsDisplayed: state => state.composer.isDisplay,
+  focusedGate: state => state.composer.focusedGate,
+  availableGates: state => state.composer.availableGates,
+  appliedGates: state => state.composer.qubit.getAppliedGatesSymbol().map(ag => state.composer.gateList.find(gl => ag === gl.symbol)),
+  qubitIsCollapsed: state => typeof state.composer.qubit.collapsed === 'object',
+  measurementData: state => state.composer.qubit.measurement,
+  composerIsAllowedMeasure: state => state.composer.allowMeasure,
+  composerIsAllowedReset: state => state.composer.allowReset
 }
 
 const mutations = {
   updateComposerStates (state, newComposerState) {
     Vue.set(state, 'composer', Object.assign({}, state.composer, newComposerState))
-  },
-  pushAppliedGate (state, gateSymbol) {
-    Vue.set(state.composer, 'appliedGates', state.composer.appliedGates.concat([gateSymbol]))
-  },
-  popAppliedGate (state) {
-    Vue.delete(state.composer.appliedGates, state.composer.appliedGates.length - 1)
   }
 }
 
 const actions = {
-  async resetComposer ({ state, commit, dispatch }) {
-    const newState = await Qapi.reset(state.global.apiServer)
-    console.log(newState)
-
-    commit('updateComposerStates', {
-      isDisplay: true,
-      availableGates: gates.map(g => g.symbol),
-      allowMeasure: true,
-      allowReset: true,
-      appliedGates: newState.gates,
-      collapsed: newState.collapsed !== false,
-      measurement: newState.measurement
-    })
-
+  async resetComposer ({ state, dispatch }) {
+    state.composer.qubit.reset()
     dispatch('unfocusGate')
   },
-  async getComposerStatus ({ state, commit }) {
-    const newState = await Qapi.getStatus(state.global.apiServer)
-    console.log(newState)
-
-    commit('updateComposerStates', {
-      appliedGates: newState.gates.map(g => g.toLowerCase()),
-      collapsed: newState.collapsed !== false,
-      measurement: newState.measurement
-    })
-  },
   async previewGate ({ state, dispatch }, gate) {
-    if (!state.composer.collapsed) {
-      const newState = await Qapi.previewGate(state.global.apiServer, gate.symbol)
-      console.log(newState)
+    const res = state.composer.qubit.calculateOperation(getBasicGateObject(gate).operation)
 
+    if (res) {
       dispatch('fireEvent', {
         trigger: 'composer-gate-preview',
         parameter: gate.symbol,
-        result: newState.state
+        result: res.state
       })
     }
   },
-  async pushGate ({ state, commit, dispatch }, gate) {
-    if (!state.composer.collapsed) {
-      commit('pushAppliedGate', gate.symbol)
+  async pushGate ({ state, dispatch }, gate) {
+    const res = state.composer.qubit.pushGates([getBasicGateObject(gate)])
 
-      const newState = await Qapi.pushGate(state.global.apiServer, gate.symbol)
-      console.log(newState)
-
+    if (res) {
       dispatch('fireEvent', {
         trigger: 'composer-gate-push',
         parameter: gate.symbol,
-        result: newState.states[newState.states.length - 1]
+        result: res.states[res.states.length - 1]
       })
     }
   },
-  async popGate ({ state, commit }) {
-    if (!state.composer.collapsed) {
-      commit('popAppliedGate')
-
-      const newState = await Qapi.popGate(state.global.apiServer)
-      console.log(newState)
-    }
+  async popGate ({ state }) {
+    state.composer.qubit.popGates()
   },
-  async measure ({ state, commit, dispatch }, batchSize = 1) {
-    if (!state.composer.collapsed) {
-      const measurement = await Qapi.measure(state.global.apiServer, batchSize)
-      console.log(measurement)
+  async measure ({ state, dispatch }, batchSize = 1) {
+    const res = state.composer.qubit.measure(batchSize)
 
-      commit('updateComposerStates', {
-        collapsed: true,
-        measurement: measurement
-      })
-
+    if (res) {
       dispatch('fireEvent', {
         trigger: 'composer-measure',
-        parameter: measurement.batchSize,
-        result: measurement.result
+        parameter: res.batchSize,
+        result: res.result
       })
     }
   },
-  async unmeasure ({ state, commit }) {
-    if (state.composer.collapsed) {
-      commit('updateComposerStates', {
-        collapsed: false,
-        measurement: {
-          batchSize: 0,
-          result: [0, 0]
-        }
-      })
-
-      const newState = await Qapi.unmeasure(state.global.apiServer)
-      console.log(newState)
-    }
+  async unmeasure ({ state }) {
+    state.composer.qubit.unmeasure()
   },
   focusGate ({ commit }, gate) {
     commit('updateComposerStates', {
@@ -143,27 +90,28 @@ const actions = {
       focusedGate: undefined
     })
   },
+  // TODO: ThreeJS animation
   addChallengeMarker ({ state }, q) {
-    Qapi.mark(state.global.apiServer, q)
+    // Qapi.mark(state.global.apiServer, q)
   },
   checkChallenge ({ state }, { q1, q2 }) {
-    return new Promise(async (resolve, reject) => {
-      const compareRes = await Qapi.compare(state.global.apiServer, q1, q2)
+    // return new Promise(async (resolve, reject) => {
+    //   const compareRes = await Qapi.compare(state.global.apiServer, q1, q2)
 
-      if (compareRes.result) {
-        Qapi.unmark(state.global.apiServer)
-      }
+    //   if (compareRes.result) {
+    //     Qapi.unmark(state.global.apiServer)
+    //   }
 
-      resolve(compareRes.result)
-    })
+    //   resolve(compareRes.result)
+    // })
   },
   playCutscene ({ state }, sceneName) {
     console.log('PLAY ' + sceneName)
-    Qapi.playCutscene(state.global.apiServer, sceneName)
+    // Qapi.playCutscene(state.global.apiServer, sceneName)
   },
   clearCutscene ({ state }) {
     console.log('CLEAR')
-    Qapi.clearCutscene(state.global.apiServer)
+    // Qapi.clearCutscene(state.global.apiServer)
   }
 }
 
