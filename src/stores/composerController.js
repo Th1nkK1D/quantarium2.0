@@ -2,6 +2,7 @@ import Vue from 'vue'
 
 import gates from '../assets/gates.json'
 import { Qubit, BasicGate } from '../libs/qsim/src'
+import BlochSphereRenderer from '../้helpers/BlochSphereRenderer'
 
 function getBasicGateObject (gate) {
   return BasicGate[gate.symbol]
@@ -15,7 +16,8 @@ const state = {
     availableGates: gates,
     focusedGate: undefined,
     allowMeasure: true,
-    allowReset: true
+    allowReset: true,
+    blochSphere: new BlochSphereRenderer()
   }
 }
 
@@ -89,6 +91,9 @@ const actions = {
     commit('updateComposerStates', {
       focusedGate: undefined
     })
+  },
+  initBlochSphereRenderer ({ state }, canvasDom) {
+    state.composer.blochSphere.render(canvasDom)
   },
   // TODO: ThreeJS animation
   addChallengeMarker ({ state }, q) {

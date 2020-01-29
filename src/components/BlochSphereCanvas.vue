@@ -3,14 +3,17 @@
 </template>
 
 <script>
-import BloachSphereRenderer from '../้helpers/BlochSphereRenderer'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'QuantumRenderer',
+  methods: {
+    ...mapActions([
+      'initBlochSphereRenderer'
+    ])
+  },
   mounted () {
-    const blochSphere = new BloachSphereRenderer()
-
-    blochSphere.render(document.querySelector('#render-canvas'))
+    this.initBlochSphereRenderer(document.querySelector('#render-canvas'))
   }
 }
 </script>
