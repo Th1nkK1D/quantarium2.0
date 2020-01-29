@@ -57,10 +57,10 @@ const actions = {
     }
   },
   async pushGate ({ state, dispatch }, gate) {
-    const newQubit = state.composer.qubit.pushGates([getBasicGateObject(gate)])
-    const newState = newQubit.states[newQubit.states.length - 1].map(val => parseFloat(val))
+    const res = state.composer.qubit.pushGates([getBasicGateObject(gate)])
+    const newState = state.composer.qubit.getCurrentState()
 
-    if (newQubit) {
+    if (res) {
       dispatch('fireEvent', {
         trigger: 'composer-gate-push',
         parameter: gate.symbol,

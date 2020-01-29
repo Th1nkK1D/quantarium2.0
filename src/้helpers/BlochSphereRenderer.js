@@ -37,10 +37,10 @@ class BlochSphereRenderer {
 
     this.objects = {
       sphere: new UnitSphere({ color: 0xffffff, transparent: true, opacity: 0.3 }),
-      xAxisLine: new VectorFromOrigin(1.5, Math.PI / 2, Math.PI / 2, 0xff0000),
-      yAxisLine: new VectorFromOrigin(1.5, 0, Math.PI / 2, 0x00ff00),
-      zAxisLine: new VectorFromOrigin(1.5, Math.PI / 2, 0, 0x0000ff),
-      stateArrow: new VectorFromOrigin(1, Math.PI / 2, 0, 0xffffff),
+      yAxisLine: new VectorFromOrigin(1.5, Math.PI / 2, Math.PI / 2, 0xff0000),
+      zAxisLine: new VectorFromOrigin(1.5, 0, Math.PI / 2, 0x00ff00),
+      xAxisLine: new VectorFromOrigin(1.5, Math.PI / 2, 0, 0x0000ff),
+      stateArrow: new VectorFromOrigin(1, 0, 0, 0xffffff),
       ripple: new Ripple(1, { color: 0xffff00, transparent: true }),
       arcLine: new ArcLine({ color: 0x00ffff })
     }
@@ -56,11 +56,11 @@ class BlochSphereRenderer {
     this.renderer.render(this.scene, this.camera)
   }
 
-  drawArcLineTo ([theta, psi]) {
+  drawArcLineTo ([psi, theta]) {
     this.objects.arcLine.expandTo(this.objects.stateArrow.state, { theta, psi }, 2000)
   }
 
-  rotateStateArrowTo ([theta, psi]) {
+  rotateStateArrowTo ([psi, theta]) {
     this.objects.stateArrow.rotateToSphericalCoords(psi, theta, 1000)
   }
 }
