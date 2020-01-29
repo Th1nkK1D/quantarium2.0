@@ -1,7 +1,7 @@
 import Vue from 'vue'
 
 import gates from '../assets/gates.json'
-import { Qubit, BasicGate } from '../libs/qsim/src'
+import { Qubit, BasicGate, getSphericalCoordinate } from '../libs/qsim/src'
 import BlochSphereRenderer from '../้helpers/BlochSphereRenderer'
 
 function getBasicGateObject (gate) {
@@ -44,25 +44,30 @@ const actions = {
     dispatch('unfocusGate')
   },
   async previewGate ({ state, dispatch }, gate) {
-    const res = state.composer.qubit.calculateOperation(getBasicGateObject(gate).operation)
+    const forecastedState = state.composer.qubit.calculateOperation(getBasicGateObject(gate).operation)
 
-    if (res) {
+    if (forecastedState) {
       dispatch('fireEvent', {
         trigger: 'composer-gate-preview',
         parameter: gate.symbol,
-        result: res.state
+        result: forecastedState
       })
+
+      state.composer.blochSphere.drawArcLineTo(getSphericalCoordinate(forecastedState))
     }
   },
   async pushGate ({ state, dispatch }, gate) {
-    const res = state.composer.qubit.pushGates([getBasicGateObject(gate)])
+    const newQubit = state.composer.qubit.pushGates([getBasicGateObject(gate)])
+    const newState = newQubit.states[newQubit.states.length - 1].map(val => parseFloat(val))
 
-    if (res) {
+    if (newQubit) {
       dispatch('fireEvent', {
         trigger: 'composer-gate-push',
         parameter: gate.symbol,
-        result: res.states[res.states.length - 1]
+        result: newState
       })
+
+      state.composer.blochSphere.rotateStateArrowTo(getSphericalCoordinate(newState))
     }
   },
   async popGate ({ state }) {

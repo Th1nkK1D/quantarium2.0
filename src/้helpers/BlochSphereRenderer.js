@@ -55,20 +55,14 @@ class BlochSphereRenderer {
     TWEEN.update()
     this.renderer.render(this.scene, this.camera)
   }
-  // rotateStateArrowBy (psi, theta) {
-  //   const newSpericalCoords = {
-  //     psi: stateArrow.state.psi + psi,
-  //     theta: stateArrow.state.theta + theta
-  //   }
 
-  //   arcLine.expandTo(stateArrow.state, newSpericalCoords, 2000).then(() => {
-  //     stateArrow.rotateToSphericalCoords(
-  //       newSpericalCoords.psi,
-  //       newSpericalCoords.theta,
-  //       1000
-  //     )
-  //   })
-  // }
+  drawArcLineTo ([theta, psi]) {
+    this.objects.arcLine.expandTo(this.objects.stateArrow.state, { theta, psi }, 2000)
+  }
+
+  rotateStateArrowTo ([theta, psi]) {
+    this.objects.stateArrow.rotateToSphericalCoords(psi, theta, 1000)
+  }
 }
 
 export default BlochSphereRenderer
