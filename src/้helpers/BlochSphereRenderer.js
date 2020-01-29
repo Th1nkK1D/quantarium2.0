@@ -35,29 +35,19 @@ class BlochSphereRenderer {
   setupScene () {
     this.scene = new THREE.Scene()
 
-    const sphere = new UnitSphere({
-      color: 0xffffff,
-      transparent: true,
-      opacity: 0.3
-    })
+    this.objects = {
+      sphere: new UnitSphere({ color: 0xffffff, transparent: true, opacity: 0.3 }),
+      xAxisLine: new VectorFromOrigin(1.5, Math.PI / 2, Math.PI / 2, 0xff0000),
+      yAxisLine: new VectorFromOrigin(1.5, 0, Math.PI / 2, 0x00ff00),
+      zAxisLine: new VectorFromOrigin(1.5, Math.PI / 2, 0, 0x0000ff),
+      stateArrow: new VectorFromOrigin(1, Math.PI / 2, 0, 0xffffff),
+      ripple: new Ripple(1, { color: 0xffff00, transparent: true }),
+      arcLine: new ArcLine({ color: 0x00ffff })
+    }
 
-    const xAxisLine = new VectorFromOrigin(1.5, Math.PI / 2, Math.PI / 2, 0xff0000)
-    const yAxisLine = new VectorFromOrigin(1.5, 0, Math.PI / 2, 0x00ff00)
-    const zAxisLine = new VectorFromOrigin(1.5, Math.PI / 2, 0, 0x0000ff)
-    const stateArrow = new VectorFromOrigin(1, Math.PI / 2, 0, 0xffffff)
-    const ripple = new Ripple(1, { color: 0xffff00, transparent: true })
-    const arcLine = new ArcLine({ color: 0x00ffff })
+    this.scene.add(...Object.values(this.objects))
 
-    this.scene
-      .add(sphere)
-      .add(xAxisLine)
-      .add(yAxisLine)
-      .add(zAxisLine)
-      .add(stateArrow)
-      .add(ripple)
-      .add(arcLine)
-
-    ripple.animateFromVector(stateArrow)
+    this.objects.ripple.animateFromVector(this.objects.stateArrow)
   }
 
   animateScene () {
