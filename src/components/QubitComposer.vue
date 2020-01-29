@@ -5,9 +5,12 @@
     <div class="fx-row">
       <h3 class="title">Qubit Composer</h3>
     </div><!-- end of title row -->
-    <div class="fx-x1"></div>
+    <!-- Qubit renderer -->
+    <div class="fx-x1">
+      <BlochSphereCanvas />
+    </div>
     <!-- stage -->
-    <div class="fx-row fx-x1" style="padding: 0 4em">
+    <div class="fx-row" style="padding: 0 4em">
       <GateStage class="fx-x1" :appliedGates="appliedGates" :onRemoveGate="popGate" :isCollapsed="qubitIsCollapsed"/>
       <div v-if="composerIsAllowedMeasure" class="fx-col options">
         <button v-if="!qubitIsCollapsed" @click="measure(1000)" :class="{'is-objective': currentObjective && currentObjective.trigger === 'composer-measure' }">
@@ -19,7 +22,7 @@
       </div>
     </div><!-- end of stage -->
     <!-- under stage -->
-    <div class="fx-row fx-x2 fx-justcent under-stage">
+    <div class="fx-row fx-justcent under-stage">
       <GateTray v-if="!qubitIsCollapsed" :onFocusGate="previewGate" :onSelectGate="pushGate" :availableGates="availableGates" />
       <MeasurementResult v-else :measurement="measurementData" />
     </div><!-- end of under stage -->
@@ -32,13 +35,15 @@ import { mapGetters, mapActions } from 'vuex'
 import GateStage from '@/components/GateStage'
 import GateTray from '@/components/GateTray'
 import MeasurementResult from '@/components/MeasurementResult'
+import BlochSphereCanvas from '@/components/BlochSphereCanvas'
 
 export default {
   name: 'QubitComposer',
   components: {
     GateStage,
     GateTray,
-    MeasurementResult
+    MeasurementResult,
+    BlochSphereCanvas
   },
   computed: {
     ...mapGetters([
