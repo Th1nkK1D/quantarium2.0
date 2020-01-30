@@ -1,12 +1,12 @@
 <template>
   <div class="fx fx-row main-menu">
     <div class="fx fx-col fx-justcent">
-      <img src="/img/quantarium_logo.png" alt="">
+      <img src="../assets/img/quantarium_logo.png" alt="">
     </div>
     <div class="fx fx-x1 fx-col fx-justcent menu-buttons">
       <h1>Quantarium</h1>
 
-      <router-link to="story">{{ langSwitch(['Story Mode', 'โหมดเนื้อเรื่อง']) }}</router-link>
+      <!-- <router-link to="story">{{ langSwitch(['Story Mode', 'โหมดเนื้อเรื่อง']) }}</router-link> -->
       <router-link to="composer">{{ langSwitch(['Composer Mode', 'โหมดอิสระ']) }}</router-link>
 
       <span @click="toggleNextLanguage()">- {{ langSwitch(['ภาษาไทย', 'English']) }} -</span>

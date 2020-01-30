@@ -5,6 +5,8 @@ import store from './stores/index'
 import './registerServiceWorker'
 import VueTypedJs from 'vue-typed-js'
 
+import './assets/fonts/stylesheet.css'
+
 Vue.use(VueTypedJs)
 
 Vue.config.productionTip = false

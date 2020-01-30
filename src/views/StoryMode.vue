@@ -9,7 +9,7 @@
       <div class="fx fx-row" :style="`height: ${!composerIsDisplayed ? '100%' : '20%' }`">
         <NarrativeDisplay :narratorState="narrator" :narrativeIsPending="narrativeIsPending" />
       </div>
-      <img src="/svg/qitty.svg" class="qitty" :style="{ bottom: composerIsDisplayed ? '-12vh' : '25vh' }" />
+      <img src="../assets/svg/qitty.svg" class="qitty" :style="{ bottom: composerIsDisplayed ? '-12vh' : '25vh' }" />
     </div>
     <div v-else class="ending-menu">
       <div class="menu-buttons">

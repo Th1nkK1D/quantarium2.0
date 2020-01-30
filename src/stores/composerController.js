@@ -1,6 +1,6 @@
 import Vue from 'vue'
 
-import gates from '../assets/gates.json'
+import gates from '../assets/configs/gates.json'
 import { Qubit, BasicGate, getSphericalCoordinate } from '../libs/qsim/src'
 import BlochSphereRenderer from '../้helpers/BlochSphereRenderer'
 

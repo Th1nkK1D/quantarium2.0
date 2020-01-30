@@ -1,6 +1,6 @@
 import Vue from 'vue'
 
-import scenes from '@/assets/scenes.json'
+import scenes from '../assets/configs/scenes.json'
 
 const state = {
   story: {
