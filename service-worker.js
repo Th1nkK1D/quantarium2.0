@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "precache-manifest.a70d315aa46752dcf2b4f952e1d050cc.js"
+  "precache-manifest.e5f84d6c499283d6fbcc1f1e19f69843.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "quantarium2.0"});
